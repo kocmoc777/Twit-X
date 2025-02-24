@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
-    <script type="text/javascript" src="validation.js" defer></script>
 </head>
 <body>
-<div class="wrapper">
+<div class="wrapper-verify">
     <h1>Login</h1>
     <p id="error-message"></p>
-    <form id="form">
+    <form action="" id="form" method="post">
+        @csrf
         <div>
             <label for="email-input">
                 <span>@</span>
@@ -26,7 +26,8 @@
         </div>
         <button type="submit">Login</button>
     </form>
-    <p>New here? <a href="signup.blade.php">Create an Account</a></p>
+    <p>New here? <a href="{{ route('signup') }}">Create an Account</a></p>
+
 </div>
 </body>
 </html>

@@ -1,17 +1,20 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Admin\Main\HomeController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+Route::prefix('/')->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/login', [HomeController::class, 'login'])->name('login');
+    Route::get('/signup', [HomeController::class, 'signup'])->name('signup');
+});
+//
+//Route::group(['namespace' => 'App\Http\Controllers\Admin', 'prefix' => 'admin'], function () {
+//    Route::group(['namespace' => 'Main'], function () {
+//        Route::get('/', 'HomeController')->name('home');
+//    });
+//});
 
-Route::get('/', [\App\Http\Controllers\HomeController::class, 'index']);
-Route::get('/signup', [\App\Http\Controllers\HomeController::class, 'index']);
+//Route::get('/', [\App\Http\Admin\main\HomeController::class, 'index']);
+//Route::get('/signup', [\App\Http\Admin\main\HomeController::class, 'index']);
+//Route::get('/login', [\App\Http\Admin\main\HomeController::class, 'index']);
