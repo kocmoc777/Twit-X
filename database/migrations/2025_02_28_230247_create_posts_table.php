@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreign('category_id', 'post_category_fk')
                 ->references('id')
                 ->on('categories');
-
+            $table->foreignId('user_id')->after('id')->constrained()->onDelete('cascade');
         });
     }
 

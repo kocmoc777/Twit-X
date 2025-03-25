@@ -12,52 +12,56 @@ class PostService
     {
         try {
             DB::beginTransaction();
-            if (isset($data['tag_ids'])) {
-                $tagIds = $data['tag_ids'];
-                unset($data['tag_ids']);
-            }
+            $data['user_id'] = auth()->id();
+            $tagIds = $data['tag_ids'] ?? [];
+            unset($data['tag_ids']);
 
             $data['preview_image'] = Storage::disk('public')->put('/images', $data['preview_image']);
             $data['main_image'] = Storage::disk('public')->put('/images', $data['main_image']);
-            $post = Post::firstOrCreate($data);
-            if (asset($tagIds)) {
 
+            $post = Post::firstOrCreate($data);
+
+            if (!empty($tagIds)) { // Перевіряємо, чи масив не пустий
                 $post->tags()->attach($tagIds);
             }
+
             DB::commit();
+            return $post;
         } catch (\Exception $exception) {
             DB::rollBack();
             abort(500);
         }
     }
+
 
     public function update($data, $post)
     {
         try {
             DB::beginTransaction();
-            if (isset($data['tag_ids'])) {
-                $tagIds = $data['tag_ids'];
-                unset($data['tag_ids']);
-            }
-
+            $tagIds = $data['tag_ids'] ?? [];
+            unset($data['tag_ids']);
 
             if (isset($data['preview_image'])) {
                 $data['preview_image'] = Storage::disk('public')->put('/images', $data['preview_image']);
             }
+
             if (isset($data['main_image'])) {
                 $data['main_image'] = Storage::disk('public')->put('/images', $data['main_image']);
             }
-            $post->update($data);
-            if (asset($tagIds)) {
 
-                $post->tags()->attach($tagIds);
+            $post->update($data);
+
+            if (!empty($tagIds)) {
+                $post->tags()->sync($tagIds);
             }
+
             DB::commit();
+            return $post;
         } catch (\Exception $exception) {
             DB::rollBack();
             abort(500);
         }
-        return $post;
     }
+
 
 }

@@ -64933,7 +64933,7 @@ function initialReordering(font, glyphs, plan) {
       if (blwf) {
         glyphs[_i13].features.blwf = true;
       }
-    } // Post-base
+    } // UserPost-base
 
 
     for (var _i14 = base + 1; _i14 < end; _i14++) {

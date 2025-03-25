@@ -5,41 +5,34 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Admin\Main\IndexController;
 
 
-Route::prefix('/')->group(function () {
-    Route::get('/', [App\Http\Main\IndexController::class, 'index'])->name('index');
-    Route::get('/login', [App\Http\Main\IndexController::class, 'login'])->name('login');
-    Route::get('/signup', [App\Http\Main\IndexController::class, 'signup'])->name('signup');
+Route::get('/', function () {
+    return redirect('/post');
 });
-////
-//Route::group(['namespace' => 'App\Http\Controllers\Admin', 'prefix' => 'admin'], function () {
-//    Route::group(['namespace' => 'Main'], function () {
-//        Route::get('/', 'IndexController')->name('admin');
-//    });
-//});
-
-//Route::get('/', [\App\Http\Admin\main\IndexController::class, 'index']);
-//Route::get('/signup', [\App\Http\Admin\main\IndexController::class, 'index']);
-//Route::get('/login', [\App\Http\Admin\main\IndexController::class, 'index']);
 
 
 Auth::routes(['verify' => true]);
+
+//Route::prefix('/')->middleware(['auth', 'admin', 'verified'])->group(function () {
+//    Route::get('/show', [App\Http\UserPost\ShowController::class, '__invoke'])->name('main.show');
 //
-//Route::get('/home', [App\Http\Controllers\IndexController::class, 'index'])->name('home');
-
-
-
-
-
-//Route::group([], function () {
-//    Route::get('/', [IndexController::class, '__invoke']);
 //});
+Route::prefix('/post')->group(function () {
+    Route::get('/', [App\Http\Post\IndexController::class, 'index'])->name('main.index');
+    Route::get('/show/{post}', [App\Http\Post\ShowController::class, 'show'])->name('main.show');
+    Route::group(['namespace' =>'Comment','prefix' => '{post}/comments'], function () {
+        Route::post('/', [App\Http\Post\Comment\StoreController::class, '__invoke'])->name('main.comment.store');
+    });
+    Route::group(['namespace' =>'Like','prefix' => '{post}/likes'], function () {
+        Route::post('/', [App\Http\Post\Like\StoreController::class, '__invoke'])->name('main.like.store');
+    });
 
 
-
-
-
-Route::prefix('admin')->middleware(['auth', 'admin', 'verified'])->group(function () {
-    Route::get('/admin', [App\Http\Admin\Main\IndexController::class, '__invoke']);
+});
+Route::group(['namespace' =>'Category', 'prefix'=> 'post-categories'], function () {
+    Route::get('/', [App\Http\Category\IndexController::class, '__invoke'])->name('category.index');
+    Route::group(['namespace' =>'UserPost','prefix' => '{category}/posts'], function () {
+        Route::get('/', [App\Http\Category\Post\IndexController::class, '__invoke'])->name('category.post.index');
+    });
 });
 
 
@@ -47,15 +40,36 @@ Route::prefix('admin')->middleware(['auth', 'admin', 'verified'])->group(functio
 
 
 
+Route::prefix('personal')->middleware(['auth','verified'])->group(function () {
+    Route::get('/', [App\Http\Personal\Main\IndexController::class, '__invoke'])->name('personal.main.index');
+    Route::get('/liked', [App\Http\Personal\Liked\IndexController::class, '__invoke'])->name('personal.liked.index');
+    Route::get('/comment', [App\Http\Personal\Comment\IndexController::class, '__invoke'])->name('personal.comment.index');
+    Route::prefix('user-posts')->group(function () {
+        Route::get('/', [App\Http\Post\UserPost\IndexController::class, '__invoke'])->name('personal.post.index');
 
+        Route::get('/create', [App\Http\Post\UserPost\CreateController::class, '__invoke'])->name('personal.post.create');
+        Route::post('/create', [App\Http\Post\UserPost\StoreController::class, '__invoke'])->name('personal.post.store');
 
+        Route::get('/{post}', [App\Http\Post\UserPost\ShowController::class, '__invoke'])->name('personal.post.show');
+        Route::get('/{post}/edit', [App\Http\Post\UserPost\EditController::class, '__invoke'])->name('personal.post.edit');
+        Route::patch('/{post}', [App\Http\Post\UserPost\UpdateController::class, '__invoke'])->name('personal.post.update');
+        Route::delete('/{post}', [App\Http\Post\UserPost\DeleteController::class, '__invoke'])->name('personal.post.delete');
+    });
+});
 
-
-
-
-
-
-
+Route::prefix('admin')->middleware(['auth', 'admin', 'verified'])->group(function () {
+    Route::get('/', [App\Http\Admin\Main\IndexController::class, '__invoke'])->name('admin.main.index');
+});
+Route::prefix('comments')->group(function () {
+    Route::get('/', [App\Http\Personal\Comment\IndexController::class, '__invoke'])->name('personal.comment.index');
+    Route::get('/{comment}/edit', [App\Http\Personal\Comment\EditController::class, '__invoke'])->name('personal.comment.edit');
+    Route::patch('/{comment}', [App\Http\Personal\Comment\UpdateController::class, '__invoke'])->name('personal.comment.update');
+    Route::delete('/{comment}', [App\Http\Personal\Comment\DeleteController::class, '__invoke'])->name('personal.comment.delete');
+});
+Route::prefix('likes')->group(function () {
+    Route::get('/', [App\Http\Personal\Liked\IndexController::class, '__invoke'])->name('personal.liked.index');
+    Route::delete('/{post}', [App\Http\Personal\Liked\DeleteController::class, '__invoke'])->name('personal.liked.delete');
+});
 
 
 Route::prefix('posts')->group(function () {
