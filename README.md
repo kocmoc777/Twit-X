@@ -24,4 +24,4 @@
 ### 1. Клонуйте репозиторій
 
 ```bash
-git clone https://github.com/yourusername/yourproject.git
+https://github.com/kocmoc777/Twit-X.git
