@@ -21,7 +21,10 @@
 
 Щоб запустити сайт, вам потрібно виконати кілька простих кроків:
 
-### 1. Клонуйте репозиторій
+### 1. 
 
 ```bash
 https://github.com/kocmoc777/Twit-X.git
+php artisan guard
+npm run dev
+
